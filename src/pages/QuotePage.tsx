@@ -179,12 +179,33 @@ const QuotePage: React.FC = () => {
   
   const handleAccountSkip = async () => {
     setIsLoading(true);
+    setError(null);
     
     try {
+      // Generate a temporary email for anonymous users
+      const anonymousEmail = `temp_${Math.random().toString(36).substring(2)}@quickcover.temp`;
+      
+      // Update insurance data with temporary email
+      setInsuranceData(prev => ({
+        ...prev,
+        accountInformation: {
+          emailAddress: anonymousEmail,
+          password: '',
+          confirmPassword: ''
+        }
+      }));
+
       // Save anonymous quote
       const id = await saveQuote(
         null, 
-        insuranceData
+        {
+          ...insuranceData,
+          accountInformation: {
+            emailAddress: anonymousEmail,
+            password: '',
+            confirmPassword: ''
+          }
+        }
       );
       
       setQuoteId(id);
@@ -199,6 +220,7 @@ const QuotePage: React.FC = () => {
   
   const handlePaymentComplete = async (paymentDetails: any) => {
     setIsLoading(true);
+    setError(null);
     
     try {
       if (quoteId) {
